@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daytona Beach Oceanfront — Guest Reviews</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --sand: #F5F0E8;
+    --ocean: #1A4A6B;
+    --ocean-light: #2A6A9B;
+    --coral: #D4614A;
+    --gold: #C8A96A;
+    --text: #1C1C1C;
+    --text-muted: #6B6560;
+    --white: #FFFFFF;
+    --card-bg: #FFFDF9;
+    --border: rgba(26,74,107,0.12);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--sand);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HERO */
+  .hero {
+    background: var(--ocean);
+    color: var(--white);
+    padding: 4rem 2rem 5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 40px,
+      rgba(255,255,255,0.015) 40px,
+      rgba(255,255,255,0.015) 80px
+    );
+  }
+  .hero-eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
+  }
+  .hero-sub {
+    font-size: 15px;
+    color: rgba(255,255,255,0.65);
+    margin-bottom: 2.5rem;
+    font-weight: 300;
+  }
+  .hero-stats {
+    display: inline-flex;
+    gap: 0;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 50px;
+    overflow: hidden;
+    backdrop-filter: blur(4px);
+  }
+  .hero-stat {
+    padding: 0.75rem 2rem;
+    border-right: 1px solid rgba(255,255,255,0.2);
+    text-align: center;
+  }
+  .hero-stat:last-child { border-right: none; }
+  .hero-stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 400;
+    display: block;
+    color: var(--white);
+  }
+  .hero-stat-label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    font-weight: 400;
+  }
+
+  /* WAVE DIVIDER */
+  .wave {
+    display: block;
+    width: 100%;
+    height: 60px;
+    background: var(--ocean);
+    clip-path: ellipse(55% 100% at 50% 0%);
+    margin-bottom: -2px;
+  }
+
+  /* CONTROLS */
+  .controls {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+  .search-wrap {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+  }
+  .search-wrap svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    stroke: var(--text-muted);
+    fill: none;
+    stroke-width: 2;
+  }
+  .search-input {
+    width: 100%;
+    padding: 10px 14px 10px 40px;
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    background: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-input:focus { border-color: var(--ocean-light); }
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .filter-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 7px 16px;
+    border-radius: 50px;
+    border: 1px solid var(--border);
+    background: var(--white);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.18s;
+    letter-spacing: 0.3px;
+  }
+  .filter-btn:hover { border-color: var(--ocean); color: var(--ocean); }
+  .filter-btn.active { background: var(--ocean); color: var(--white); border-color: var(--ocean); }
+
+  /* RESULTS COUNT */
+  .results-bar {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 1.5rem 1.25rem;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+  .results-bar strong { color: var(--text); font-weight: 500; }
+
+  /* GRID */
+  .reviews-grid {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 16px;
+  }
+
+  /* CARD */
+  .review-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.4rem 1.5rem;
+    transition: transform 0.18s, box-shadow 0.18s;
+    animation: fadeUp 0.3s ease both;
+  }
+  .review-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(26,74,107,0.08);
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 500;
+    flex-shrink: 0;
+    font-family: 'Playfair Display', serif;
+  }
+  .card-meta { flex: 1; }
+  .reviewer-name {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .review-date-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .review-date {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+  .platform-badge {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 9px;
+    border-radius: 50px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+  .badge-homeaway { background: #E3EFF8; color: #1A4A6B; }
+  .badge-airbnb { background: #FCEAE7; color: #A33220; }
+  .badge-website { background: #E8F4EF; color: #2A6B50; }
+  .badge-bookingcom { background: #EEE8FA; color: #4A2A8A; }
+  .badge-vrbo { background: #E3EFF8; color: #1A4A6B; }
+  .stars {
+    color: var(--gold);
+    font-size: 13px;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .review-text {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+  .quote-mark {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    color: var(--gold);
+    opacity: 0.3;
+    line-height: 0.5;
+    float: left;
+    margin-right: 4px;
+    margin-top: 14px;
+  }
+
+  /* NO RESULTS */
+  .no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+    font-size: 15px;
+    font-weight: 300;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--ocean);
+    color: rgba(255,255,255,0.6);
+    text-align: center;
+    padding: 2rem;
+    font-size: 13px;
+    font-weight: 300;
+  }
+  footer strong { color: var(--white); font-weight: 500; }
+
+  @media (max-width: 480px) {
+    .hero-stats { flex-direction: column; border-radius: 16px; }
+    .hero-stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.2); }
+    .hero-stat:last-child { border-bottom: none; }
+    .reviews-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <p class="hero-eyebrow">800 N Atlantic Ave, Unit 401 · Daytona Beach, FL</p>
+  <h1>What our guests are saying</h1>
+  <p class="hero-sub">Verified reviews from guests who stayed at our oceanfront condo</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <span class="hero-stat-num" id="hero-count">51</span>
+      <span class="hero-stat-label">Reviews</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">4.8 ★</span>
+      <span class="hero-stat-label">Avg rating</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">2023–2025</span>
+      <span class="hero-stat-label">Stay dates</span>
+    </div>
+  </div>
+</div>
+<div class="wave"></div>
+
+<div class="controls">
+  <div class="search-wrap">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input class="search-input" type="text" placeholder="Search reviews…" id="search-input" oninput="filterReviews()" />
+  </div>
+  <div class="filters">
+    <button class="filter-btn active" onclick="setFilter('All',this)">All</button>
+    <button class="filter-btn" onclick="setFilter('HomeAway',this)">HomeAway</button>
+    <button class="filter-btn" onclick="setFilter('Airbnb',this)">Airbnb</button>
+    <button class="filter-btn" onclick="setFilter('Website',this)">Direct</button>
+    <button class="filter-btn" onclick="setFilter('Booking.com',this)">Booking.com</button>
+  </div>
+</div>
+
+<div class="results-bar" id="results-bar">Showing <strong>51</strong> reviews</div>
+
+<div class="reviews-grid" id="reviews-grid"></div>
+
+<footer>
+  <strong>800 N Atlantic Ave, Unit 401 · Daytona Beach, FL</strong><br>
+  Reviews collected from HomeAway, Airbnb, VRBO, Booking.com &amp; direct bookings
+</footer>
+
+<script>
+const reviews = [
+  { name: "Shauna Rae", date: "Dec 2025", platform: "HomeAway", stars: 5, text: "The views are amazing and the place had everything in it you needed including a wine bottle opener! Access was perfect and the elevator was close to the room. Will definitely be staying here again!" },
+  { name: "Derek", date: "Nov 2025", platform: "HomeAway", stars: 5, text: "Cozy place with everything I needed. Fully stocked kitchen. Balcony overlooking the ocean and beach. Perfect place to stay while I did the Clash Daytona Triathlon. Has a beautiful pool…but it's not heated — that was the only letdown." },
+  { name: "Carolyn", date: "Nov 2025", platform: "HomeAway", stars: 5, text: "Cozy and clean. Condo is just as pictured. We needed to change our dates and the host went out of his way to work with the management company to ensure we were not charged additional fees. Great stay!" },
+  { name: "Thomas", date: "Sep 2025", platform: "HomeAway", stars: 5, text: "Cute room! We had a great weekend at the beach! Easy check in and check out!" },
+  { name: "Hunter", date: "Aug 2025", platform: "Airbnb", stars: 5, text: "Good place." },
+  { name: "Kara", date: "Aug 2025", platform: "HomeAway", stars: 5, text: "Lovely, clean condo with a beachfront view! This was the perfect place for a quick getaway. The owner provided helpful communication and was very responsive to any questions we had." },
+  { name: "Mike", date: "Aug 2025", platform: "Airbnb", stars: 5, text: "Fair price for oceanfront. Beautiful place!" },
+  { name: "Leslie", date: "Jul 2025", platform: "Airbnb", stars: 5, text: "Very clean and quiet unit. Close to a lot of activities. Good location! Very comfy bed." },
+  { name: "Jessica", date: "Jul 2025", platform: "HomeAway", stars: 5, text: "Perfect for low key beach time. Great family trip." },
+  { name: "Charlene", date: "Jun 2025", platform: "Airbnb", stars: 5, text: "The studio was a great stay for myself and my husband. Just enough for 2 people to be comfortable. The balcony looking at the beach was great for morning sunrises and nightly relaxation. We recommend this to any couple looking for a few days to get away." },
+  { name: "Tracy", date: "Jun 2025", platform: "Website", stars: 5, text: "Everything was great. View was excellent." },
+  { name: "Constance", date: "May 2025", platform: "Airbnb", stars: 5, text: "The beachfront property was a very nice place to stay. There's construction out front on weekdays. The pillows could be better — bring your own. Other than that the place was fantastic and everything was great." },
+  { name: "Debbie", date: "May 2025", platform: "Website", stars: 5, text: "The studio unit was as pictured. Nice and clean. Bed slept well. Our host was amazing and always kept in touch! We will return again!" },
+  { name: "Allison", date: "May 2025", platform: "Website", stars: 5, text: "Great location. Condo is what the pictures look like." },
+  { name: "Michael", date: "May 2025", platform: "HomeAway", stars: 5, text: "Great stay and location. Would stay again." },
+  { name: "Bill", date: "Apr 2025", platform: "HomeAway", stars: 5, text: "We were here for Jeep Beach, our second year at the same condo. Perfect to get on the beach, close to everything, secure parking. Contact was super attentive and helped greatly. I can't say one bad thing about this rental." },
+  { name: "Becky", date: "Apr 2025", platform: "HomeAway", stars: 5, text: "Great place. Would come back again." },
+  { name: "Teresa", date: "Apr 2025", platform: "Website", stars: 5, text: "We totally enjoyed our visit. The studio was clean and well stocked. Being able to sit out on the balcony to enjoy the ocean view was wonderful. Dave and Claire were accommodating whenever I had a question. Beautiful." },
+  { name: "William", date: "Mar 2025", platform: "HomeAway", stars: 5, text: "This property had everything we needed at an affordable price. Direct access to the beach, plenty of great stores and restaurants in close walking distance, and plenty of room for two people." },
+  { name: "Angie", date: "Mar 2025", platform: "Airbnb", stars: 5, text: "Our stay in Daytona was a blast — I would definitely book this place again. It's so peaceful, we felt right at home!" },
+  { name: "Charles", date: "Dec 2024", platform: "Airbnb", stars: 5, text: "The accommodations were just as pictured. The stay was quiet, parking was easily accessible and so was the beach. The building is pretty old but the unit is very modern with a great sunrise and beach view." },
+  { name: "Ronald", date: "Dec 2024", platform: "Website", stars: 5, text: "Room was clean, had great amenities, beautiful view of the ocean! Owner was very nice and helpful!" },
+  { name: "Karen", date: "Dec 2024", platform: "HomeAway", stars: 5, text: "Daytona Beach is my favorite place ever and this is my second visit to this exquisite condo! The beachfront view is breathtaking and sunrises are out of this world. The hosts were great communicators and check-in was seamless. I ended up extending my stay. I highly recommend staying here and will be back." },
+  { name: "Megan", date: "Nov 2024", platform: "HomeAway", stars: 5, text: "Very cute studio with all the necessities provided. In walking distance or a short drive to the boardwalk and other activities. Beautiful beach view and sunrise every morning. Will definitely book again." },
+  { name: "Dan", date: "Nov 2024", platform: "HomeAway", stars: 5, text: "Great spot. Just as described." },
+  { name: "Julia", date: "Oct 2024", platform: "HomeAway", stars: 5, text: "My mom and I stayed here for our birthdays! The condo was beautifully renovated with a cool tiki/island theme and was spotless. The property is steps from the beach, a short walk to restaurants and stores. The balcony has a full beach view. Security on the property made us feel safe. The water pressure in the shower was amazing! We will definitely be booking again next year!" },
+  { name: "Haylei", date: "Sep 2024", platform: "Airbnb", stars: 5, text: "Absolutely beautiful place and location!" },
+  { name: "Jarrel", date: "Sep 2024", platform: "Airbnb", stars: 5, text: "The host was very responsive and available to answer any questions. I would recommend to anybody looking for a quick getaway." },
+  { name: "Mike", date: "Aug 2024", platform: "HomeAway", stars: 5, text: "My wife and I stayed the weekend for the Coke Zero 400 and we absolutely loved it! Everything about the property is great from its location to the track, the beach, and many great local attractions and restaurants. You will not be disappointed!" },
+  { name: "Amanda", date: "Aug 2024", platform: "HomeAway", stars: 5, text: "So cozy and beautiful view. A great stay for a short getaway." },
+  { name: "Brandusa", date: "Jul 2024", platform: "HomeAway", stars: 5, text: "The place was great! Very clean and close to everything you need." },
+  { name: "Kayla", date: "Jul 2024", platform: "HomeAway", stars: 4, text: "Perfect stay for a few nights. Plenty of room and a perfect little kitchen. No direct beach access due to rebuilding at the time. Perfect sunrise view! Would stay again." },
+  { name: "Rebecca", date: "Jul 2024", platform: "Airbnb", stars: 5, text: "We really enjoyed our stay. The host was very friendly and responded quickly. It was completely furnished with everything we needed! Relaxing getaway with a beautiful view." },
+  { name: "Emma", date: "May 2024", platform: "Airbnb", stars: 5, text: "This place was great! The inside is just like it looks in the pictures. It's right on the beach which was so nice, and perfect for two people. The exterior is rough, but the Airbnb itself is awesome. We really enjoyed our stay and would come back!" },
+  { name: "David", date: "May 2024", platform: "Booking.com", stars: 5, text: "Beautiful view, beautiful condo. Owners were so helpful when we had trouble getting in to the unit. Followed up to make sure we could get in and out." },
+  { name: "Cassandra", date: "May 2024", platform: "HomeAway", stars: 5, text: "The view was awesome! The breakfast nook and kitchen let you enjoy the view while you eat. The place was very clean and well maintained. They also had a nice selection of channels and the ability to sign into streaming services. Thanks for a great stay!" },
+  { name: "Sandra", date: "May 2024", platform: "Airbnb", stars: 5, text: "Awesome place to stay. We would highly recommend it!" },
+  { name: "Lea Ann", date: "Apr 2024", platform: "Website", stars: 5, text: "Waking up to the sunrise over the water! The balcony overlooking the ocean can't be beat. Eating breakfast at the counter while watching dolphins swim by is magical. The studio was nicely outfitted with everything we needed and was very clean. We will definitely stay again!" },
+  { name: "Norma", date: "Dec 2023", platform: "Airbnb", stars: 5, text: "The room was what we expected. View was great — we could see the ocean and fireworks at Hard Rock Condos on New Year's Eve." },
+  { name: "Tim", date: "Nov 2023", platform: "Website", stars: 5, text: "Great location." },
+  { name: "Larry", date: "Nov 2023", platform: "Airbnb", stars: 5, text: "Dave was very available and responsive." },
+  { name: "Tim B", date: "Nov 2023", platform: "Airbnb", stars: 5, text: "Great view of the beach." },
+  { name: "Tonnesha", date: "Nov 2023", platform: "Airbnb", stars: 4, text: "This place was a great stay for our small getaway. Very cozy vibes, with the beach right behind the condo. The bed is a little uncomfortable but other than that perfect for a short getaway." },
+  { name: "Dylan", date: "Oct 2023", platform: "Airbnb", stars: 5, text: "I would highly recommend this place to any of my friends or family. It was a great stay — clean and well kept. The host was very proactive, answered any questions, and gave good recommendations. If you're second-guessing booking this place, don't — you won't be disappointed." },
+  { name: "Yolanda", date: "Sep 2023", platform: "Airbnb", stars: 4, text: "Our stay at this beach was pretty great. Weather did not cooperate but it was still an enjoyable stay." },
+  { name: "Hannah", date: "Aug 2023", platform: "Airbnb", stars: 5, text: "Such a calm, beautiful place with a view. Easy access to the beach, parking was never an issue, easy access to golfing, Disney parks, and the Nascar races. Our host was responsive, personable, and the place felt like a home away from home. Couldn't recommend this place enough!" },
+  { name: "Erick", date: "Jul 2023", platform: "Airbnb", stars: 5, text: "We enjoyed our stay in Daytona! Parking was easy and check-in instructions were clear. Stepping to the balcony to an ocean view was amazing!" },
+  { name: "Brittney", date: "Jul 2023", platform: "Airbnb", stars: 5, text: "We booked a last minute trip to Daytona Beach and found this spot. The price was reasonable and we were pleasantly surprised. Great location right on the beach. Parking was onsite and covered. Positive experience!" },
+  { name: "Michael", date: "Jul 2023", platform: "Airbnb", stars: 5, text: "Great location and stay! Check in was easy and the place had everything we needed." },
+  { name: "Jeffery", date: "Jun 2023", platform: "Airbnb", stars: 5, text: "Just wow. Go see for yourself — you'll want to book again like I will. Very clean, very responsive and caring host." },
+  { name: "Steve", date: "Jun 2023", platform: "Airbnb", stars: 5, text: "Great location. Corner unit and excellent views!" },
+  { name: "Sarah", date: "Jun 2023", platform: "Airbnb", stars: 4, text: "The value is in the view. Very quaint but perfect for two. Budget friendly. Lots to see and do in Daytona. Great location — just steps from the beach." },
+  { name: "Charlebois", date: "Jul 2023", platform: "Booking.com", stars: 5, text: "A condo with a superb view, 100% cleanliness and a very comfortable bed. Great speed of response from the owner for any questions. Very good service." },
+];
+
+const avatarPalettes = [
+  { bg: '#D6E8F5', color: '#1A4A6B' },
+  { bg: '#EDE8FA', color: '#4A2A8A' },
+  { bg: '#D6EDE5', color: '#2A6B50' },
+  { bg: '#F5E6E3', color: '#A33220' },
+  { bg: '#F5EDD6', color: '#7A5A10' },
+];
+
+function initials(n) { return n.split(' ').map(x=>x[0]).join('').substring(0,2).toUpperCase(); }
+function palette(n) { return avatarPalettes[n.charCodeAt(0) % avatarPalettes.length]; }
+function badge(p) {
+  const m = { HomeAway:'homeaway', Airbnb:'airbnb', Website:'website', 'Booking.com':'bookingcom', VRBO:'vrbo' };
+  return `<span class="platform-badge badge-${m[p]||'website'}">${p}</span>`;
+}
+function stars(n) { return '★'.repeat(n)+'☆'.repeat(5-n); }
+
+let activeFilter = 'All';
+
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterReviews();
+}
+
+function filterReviews() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const grid = document.getElementById('reviews-grid');
+  const bar = document.getElementById('results-bar');
+  const filtered = reviews.filter(r => {
+    const mp = activeFilter === 'All' || r.platform === activeFilter;
+    const ms = !q || r.text.toLowerCase().includes(q) || r.name.toLowerCase().includes(q);
+    return mp && ms;
+  });
+  document.getElementById('hero-count').textContent = filtered.length;
+  bar.innerHTML = `Showing <strong>${filtered.length}</strong> review${filtered.length !== 1 ? 's' : ''}`;
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="no-results">No reviews match your search.</div>';
+    return;
+  }
+  grid.innerHTML = filtered.map((r,i) => {
+    const p = palette(r.name);
+    return `<div class="review-card" style="animation-delay:${Math.min(i*0.03,0.4)}s">
+      <div class="card-top">
+        <div class="avatar" style="background:${p.bg};color:${p.color}">${initials(r.name)}</div>
+        <div class="card-meta">
+          <div class="reviewer-name">${r.name}</div>
+          <div class="review-date-line">
+            <span class="review-date">${r.date}</span>
+            ${badge(r.platform)}
+          </div>
+        </div>
+        <div class="stars">${stars(r.stars)}</div>
+      </div>
+      <div class="review-text"><span class="quote-mark">"</span>${r.text}</div>
+    </div>`;
+  }).join('');
+}
+
+filterReviews();
+</script>
+</body>
+</html>
